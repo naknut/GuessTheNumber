@@ -33,7 +33,7 @@ public class InitialState extends State {
         byte[] data = input.getData();
         String message = new String(data);
         System.out.println(message);
-        if(message.startsWith("HELLO")) {
+        if(message.startsWith("OK")) {
             return new WatingState(address, socket);
         }
         return new InitialState(address, socket);

@@ -1,27 +1,28 @@
+import States.InitialState;
+import States.State;
+
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
+import java.net.*;
 
 /**
  * Created by Naknut on 11/09/14.
  */
 public class Client {
+
+    private static State state;
+
     public static void main(String[] args) throws IOException {
         DatagramSocket socket = null;
         try {
             socket = new DatagramSocket();
-            byte[] outBuffer = "HELLO".getBytes();
-            byte[] inBuffer = new byte[7];
-
-            DatagramPacket outPacket = new DatagramPacket(outBuffer, outBuffer.length, InetAddress.getByName("localhost"), 1337);
-            socket.send(outPacket);
-
-            DatagramPacket inPacket = new DatagramPacket(inBuffer, inBuffer.length);
-            socket.receive(inPacket);
-            String message = new String(inPacket.getData(), "UTF-8");
-            System.out.println(message);
+            InetSocketAddress address = new InetSocketAddress("localhost", 1337);
+            state = new InitialState(address, socket);
+            while (true) {
+                byte[] inBuffer = new byte[7];
+                DatagramPacket inPacket = new DatagramPacket(inBuffer, inBuffer.length);
+                socket.receive(inPacket);
+                state = state.nextState(inPacket);
+            }
         } catch (SocketException e) {
             e.printStackTrace();
         } finally {

@@ -23,7 +23,7 @@ public class WatingState extends State {
         if(message.startsWith("START")) {
             Random random = new Random();
             sendReady(input.getSocketAddress());
-            return new GameState(random.nextInt() % 100);
+            return new GameState(Math.abs(random.nextInt()) % 100);
         }
         sendError(input.getSocketAddress());
         return new InitalState();

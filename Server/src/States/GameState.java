@@ -17,12 +17,16 @@ public class GameState extends State {
     public GameState(int number) {
         super();
         this.number = number;
+        System.out.print(number);
     }
 
     @Override
     public State nextState(DatagramPacket input) throws IOException {
         byte[] data = input.getData();
-        String messageText = new String(data);
+        byte[] trimmedData = new byte[input.getLength()];
+        System.out.println(input.getLength());
+        System.arraycopy(data, 0, trimmedData, 0, trimmedData.length);
+        String messageText = new String(trimmedData);
         if(messageText.startsWith("HELLO")) {
             sendBusy(input.getSocketAddress());
             return this;
