@@ -21,7 +21,7 @@ public class InitalState extends State {
             return new WatingState();
         }
         sendError(input.getSocketAddress());
-        return this;
+        return new InitalState();
     }
 
     private void sendOk(SocketAddress address) {

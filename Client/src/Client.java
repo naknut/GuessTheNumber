@@ -13,7 +13,7 @@ public class Client {
         try {
             socket = new DatagramSocket();
             byte[] outBuffer = "HELLO".getBytes();
-            byte[] inBuffer = new byte["READY".getBytes().length];
+            byte[] inBuffer = new byte[7];
 
             DatagramPacket outPacket = new DatagramPacket(outBuffer, outBuffer.length, InetAddress.getByName("localhost"), 1337);
             socket.send(outPacket);

@@ -22,21 +22,26 @@ public class GameState extends State {
     @Override
     public State nextState(DatagramPacket input) throws IOException {
         byte[] data = input.getData();
+        String messageText = new String(data);
+        if(messageText.startsWith("HELLO")) {
+            sendBusy(input.getSocketAddress());
+            return this;
+        }
         ByteBuffer wrapped = ByteBuffer.wrap(data);
-        int message = wrapped.getInt();
-        System.out.println(message);
-        if(message < number) {
+        int messageInt = wrapped.getInt();
+        System.out.println(messageInt);
+        if(messageInt < number) {
             sendLo(input.getSocketAddress());
             return this;
-        } else if(message > number) {
+        } else if(messageInt > number) {
             sendHi(input.getSocketAddress());
             return this;
-        } else if(message == number) {
+        } else if(messageInt == number) {
             sendCorrect(input.getSocketAddress());
             return new InitalState();
         }
         sendError(input.getSocketAddress());
-        return this;
+        return new InitalState();
     }
 
     public void sendHi(SocketAddress address) {

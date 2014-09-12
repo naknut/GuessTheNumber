@@ -28,4 +28,21 @@ public abstract class State {
                 socket.close();
         }
     }
+
+    public void sendBusy(SocketAddress address) {
+        DatagramSocket socket = null;
+        try {
+            socket = new DatagramSocket();
+            byte[] data = "BUSY".getBytes();
+            DatagramPacket packet = new DatagramPacket(data, data.length, address);
+            socket.send(packet);
+        } catch (SocketException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if(socket != null)
+                socket.close();
+        }
+    }
 }

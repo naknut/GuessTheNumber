@@ -16,13 +16,17 @@ public class WatingState extends State {
         byte[] data = input.getData();
         String message = new String(data);
         System.out.println(message);
+        if(message.startsWith("HELLO")) {
+            sendBusy(input.getSocketAddress());
+            return this;
+        }
         if(message.startsWith("START")) {
             Random random = new Random();
             sendReady(input.getSocketAddress());
             return new GameState(random.nextInt() % 100);
         }
         sendError(input.getSocketAddress());
-        return this;
+        return new InitalState();
     }
 
     public void sendReady(SocketAddress address) {

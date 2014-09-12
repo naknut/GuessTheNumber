@@ -14,7 +14,7 @@ public class Server {
 
     public static void main(String[] args) throws IOException {
         DatagramSocket socket = new DatagramSocket(1337);
-        byte[] buffer = new byte["CORRECT".getBytes().length];
+        byte[] buffer = new byte[256];
         while(true){
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
             socket.receive(packet);
