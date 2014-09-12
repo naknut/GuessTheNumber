@@ -12,9 +12,11 @@ import java.net.SocketException;
 public class InitialState extends State {
 
     private DatagramSocket socket;
+    private SocketAddress address;
 
     public InitialState(SocketAddress address, DatagramSocket socket) {
         this.socket = socket;
+        this.address = address;
         byte[] outBuffer = "HELLO".getBytes();
         try {
             DatagramPacket outPacket = new DatagramPacket(outBuffer, outBuffer.length, address);
@@ -32,8 +34,8 @@ public class InitialState extends State {
         String message = new String(data);
         System.out.println(message);
         if(message.startsWith("HELLO")) {
-            return new WatingState(socket);
+            return new WatingState(address, socket);
         }
-        return new InitialState(socket);
+        return new InitialState(address, socket);
     }
 }
