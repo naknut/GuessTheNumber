@@ -27,21 +27,39 @@ public class GameState extends State {
             sendBusy(input.getSocketAddress());
             return this;
         }
-        ByteBuffer wrapped = ByteBuffer.wrap(data);
-        int messageInt = wrapped.getInt();
-        System.out.println(messageInt);
-        if(messageInt < number) {
+
+        if(!messageText.startsWith("GUESS")){
+            sendError(input.getSocketAddress());
+        }
+        int guessInt = Integer.parseInt(messageText.split(" ")[1].toString());
+
+        System.out.println(guessInt);
+        if(guessInt < number) {
             sendLo(input.getSocketAddress());
             return this;
-        } else if(messageInt > number) {
+        } else if(guessInt > number) {
             sendHi(input.getSocketAddress());
             return this;
-        } else if(messageInt == number) {
+        } else if(guessInt == number) {
             sendCorrect(input.getSocketAddress());
             return new InitalState();
         }
         sendError(input.getSocketAddress());
         return new InitalState();
+    }
+
+    private int getIntFromGuess(String messageText) {
+        StringBuilder SB = new StringBuilder();
+        for(int i=5;i<messageText.length();i++){
+            if(Character.isDigit(messageText.charAt(i))){
+                SB.append(messageText.charAt(i));
+            }
+            else{
+                return Integer.parseInt(SB.toString());
+            }
+        }
+
+        return -1;
     }
 
     public void sendHi(SocketAddress address) {
