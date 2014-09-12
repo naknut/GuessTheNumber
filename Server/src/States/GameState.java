@@ -6,6 +6,7 @@ import java.net.DatagramSocket;
 import java.net.SocketAddress;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
+import java.util.Random;
 
 /**
  * Created by Naknut on 12/09/14.
@@ -13,11 +14,15 @@ import java.nio.ByteBuffer;
 public class GameState extends State {
 
     private int number;
+    private SocketAddress address;
 
-    public GameState(int number) {
-        super();
-        this.number = number;
-        System.out.print(number);
+    protected GameState(SocketAddress address, DatagramSocket socket) {
+        super(socket);
+        this.address = address;
+        Random random = new Random();
+        number = Math.abs(random.nextInt()) % 100;
+        System.out.println(number);
+        sendReady();
     }
 
     @Override
@@ -46,77 +51,58 @@ public class GameState extends State {
             return this;
         } else if(guessInt == number) {
             sendCorrect(input.getSocketAddress());
-            return new InitalState();
+            return new InitalState(socket);
         }
         sendError(input.getSocketAddress());
-        return new InitalState();
+        return new InitalState(socket);
     }
 
-    private int getIntFromGuess(String messageText) {
-        StringBuilder SB = new StringBuilder();
-        for(int i=5;i<messageText.length();i++){
-            if(Character.isDigit(messageText.charAt(i))){
-                SB.append(messageText.charAt(i));
-            }
-            else{
-                return Integer.parseInt(SB.toString());
-            }
-        }
-
-        return -1;
-    }
-
-    public void sendHi(SocketAddress address) {
-        DatagramSocket socket = null;
+    public void sendReady() {
         try {
             socket = new DatagramSocket();
-            byte[] data = "HI".getBytes();
+            byte[] data = "READY".getBytes();
             DatagramPacket packet = new DatagramPacket(data, data.length, address);
             socket.send(packet);
-            socket.close();
         } catch (SocketException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            if(socket != null)
-                socket.close();
+        }
+    }
+
+    public void sendHi(SocketAddress address) {
+        try {
+            byte[] data = "HI".getBytes();
+            DatagramPacket packet = new DatagramPacket(data, data.length, address);
+            socket.send(packet);
+        } catch (SocketException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
     public void sendLo(SocketAddress address) {
-        DatagramSocket socket = null;
         try {
-            socket = new DatagramSocket();
             byte[] data = "LO".getBytes();
             DatagramPacket packet = new DatagramPacket(data, data.length, address);
             socket.send(packet);
-            socket.close();
         } catch (SocketException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            if(socket != null)
-                socket.close();
         }
     }
 
     public void sendCorrect(SocketAddress address) {
-        DatagramSocket socket = null;
         try {
-            socket = new DatagramSocket();
             byte[] data = "CORRECT".getBytes();
             DatagramPacket packet = new DatagramPacket(data, data.length, address);
             socket.send(packet);
-            socket.close();
         } catch (SocketException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            if(socket != null)
-                socket.close();
         }
     }
 }

@@ -11,6 +11,20 @@ import java.util.Random;
  * Created by Naknut on 11/09/14.
  */
 public class WatingState extends State {
+
+    SocketAddress address;
+
+    protected WatingState(SocketAddress address, DatagramSocket socket) {
+        super(socket);
+        try {
+            socket.setSoTimeout(10000);
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+        this.address = address;
+        sendOk();
+    }
+
     @Override
     public State nextState(DatagramPacket input) throws IOException {
         byte[] data = input.getData();
@@ -21,29 +35,21 @@ public class WatingState extends State {
             return this;
         }
         if(message.startsWith("START")) {
-            Random random = new Random();
-            sendReady(input.getSocketAddress());
-            return new GameState(Math.abs(random.nextInt()) % 100);
+            return new GameState(address, socket);
         }
         sendError(input.getSocketAddress());
-        return new InitalState();
+        return new InitalState(socket);
     }
 
-    public void sendReady(SocketAddress address) {
-        DatagramSocket socket = null;
+    private void sendOk() {
         try {
-            socket = new DatagramSocket();
-            byte[] data = "READY".getBytes();
+            byte[] data = "OK".getBytes();
             DatagramPacket packet = new DatagramPacket(data, data.length, address);
             socket.send(packet);
-            socket.close();
         } catch (SocketException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            if(socket != null)
-                socket.close();
         }
     }
 }

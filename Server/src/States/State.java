@@ -10,6 +10,13 @@ import java.net.SocketException;
  * Created by Naknut on 11/09/14.
  */
 public abstract class State {
+
+    protected DatagramSocket socket;
+
+    protected State(DatagramSocket socket) {
+        this.socket = socket;
+    }
+
     public abstract State nextState(DatagramPacket input) throws IOException;
 
     public void sendError(SocketAddress address) {
@@ -23,16 +30,11 @@ public abstract class State {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            if(socket != null)
-                socket.close();
         }
     }
 
     public void sendBusy(SocketAddress address) {
-        DatagramSocket socket = null;
         try {
-            socket = new DatagramSocket();
             byte[] data = "BUSY".getBytes();
             DatagramPacket packet = new DatagramPacket(data, data.length, address);
             socket.send(packet);
@@ -40,9 +42,6 @@ public abstract class State {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            if(socket != null)
-                socket.close();
         }
     }
 }
