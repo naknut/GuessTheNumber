@@ -37,10 +37,18 @@ public class GameState extends State {
             return this;
         }
 
-        if(!messageText.startsWith("GUESS")){
+        if(!messageText.startsWith("GUESS") || messageText.split(" ").length < 2){
             sendError(input.getSocketAddress());
+            return this;
         }
-        int guessInt = Integer.parseInt(messageText.split(" ")[1].toString());
+        int guessInt=0;
+        try{
+            guessInt = Integer.parseInt(messageText.split(" ")[1].toString());
+        }
+        catch (NumberFormatException nfe){
+            sendError(input.getSocketAddress());
+            return this;
+        }
 
         System.out.println(guessInt);
         if(guessInt < number) {
